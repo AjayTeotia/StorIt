@@ -3,6 +3,7 @@
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,6 +18,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { createAccount, signInUser } from '@/lib/actions/user.action'
+import { OtpModal } from '@/components/OtpModal'
 
 type FormType = 'sign-in' | 'sign-up'
 
@@ -56,6 +58,8 @@ export const AuthForm = ({ type }: { type: FormType }) => {
               email: values.email,
             })
           : await signInUser({ email: values.email })
+
+      setAccountId(user.accountId)
     } catch {
       setErrorMessage('Failed to create account. Please try again.')
     } finally {
@@ -142,16 +146,20 @@ export const AuthForm = ({ type }: { type: FormType }) => {
                 ? "Don't have an account?"
                 : 'Already have an account?'}
             </p>
-
             <Link
               href={type === 'sign-in' ? '/sign-up' : '/sign-in'}
               className="ml-1 font-medium text-brand"
             >
+              {' '}
               {type === 'sign-in' ? 'Sign Up' : 'Sign In'}
             </Link>
           </div>
         </form>
       </Form>
+
+      {accountId && (
+        <OtpModal email={form.getValues('email')} accountId={accountId} />
+      )}
     </>
   )
 }
