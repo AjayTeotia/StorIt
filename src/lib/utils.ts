@@ -37,44 +37,105 @@ export const getFileType = (fileName: string) => {
 
   if (!extension) return { type: 'other', extension: '' }
 
+  // Document file extensions (including design and eBook formats)
   const documentExtensions = [
-    'pdf',
-    'doc',
-    'docx',
-    'txt',
-    'xls',
-    'xlsx',
-    'csv',
-    'rtf',
-    'ods',
-    'ppt',
-    'odp',
-    'md',
-    'html',
-    'htm',
-    'epub',
-    'pages',
-    'fig',
-    'psd',
-    'ai',
-    'indd',
-    'xd',
-    'sketch',
-    'afdesign',
-    'afphoto',
-    'afphoto',
+    'pdf', // Portable Document Format
+    'doc', // Microsoft Word 97-2003 Document
+    'docx', // Microsoft Word Document (Open XML)
+    'txt', // Plain Text File
+    'xls', // Microsoft Excel 97-2003 Spreadsheet
+    'xlsx', // Microsoft Excel Spreadsheet (Open XML)
+    'csv', // Comma-Separated Values File
+    'rtf', // Rich Text Format
+    'ods', // OpenDocument Spreadsheet
+    'ppt', // Microsoft PowerPoint 97-2003 Presentation
+    'pptx', // Microsoft PowerPoint Presentation (Open XML)
+    'odp', // OpenDocument Presentation
+    'md', // Markdown File
+    'html', // HyperText Markup Language
+    'htm', // HyperText Markup Language
+    'epub', // eBook Format
+    'pages', // Apple Pages Document
+    'fig', // Figma Design File
+    'psd', // Adobe Photoshop Document
+    'ai', // Adobe Illustrator Document
+    'indd', // Adobe InDesign Document
+    'xd', // Adobe XD Document
+    'sketch', // Sketch Design File
+    'afdesign', // Affinity Designer File
+    'afphoto', // Affinity Photo File
+    'xlsx', // Excel Spreadsheet (Open XML)
   ]
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp']
-  const videoExtensions = ['mp4', 'avi', 'mov', 'mkv', 'webm']
-  const audioExtensions = ['mp3', 'wav', 'ogg', 'flac']
 
+  // Image file extensions
+  const imageExtensions = [
+    'jpg', // JPEG Image
+    'jpeg', // JPEG Image
+    'png', // PNG Image
+    'gif', // GIF Image
+    'bmp', // Bitmap Image
+    'svg', // Scalable Vector Graphics
+    'webp', // WebP Image
+    'tiff', // TIFF Image
+    'ico', // Icon file
+    'apng', // Animated PNG
+    'heif', // High Efficiency Image Format
+    'heic', // High Efficiency Image Coding (HEIC)
+    'raw', // Raw Image Format (e.g., RAW for cameras)
+    'jfif', // JPEG File Interchange Format (similar to JPG)
+    'dds', // DirectDraw Surface (used in textures)
+  ]
+
+  // Video file extensions
+  const videoExtensions = [
+    'mp4', // MP4 Video
+    'avi', // AVI Video
+    'mov', // MOV Video
+    'mkv', // MKV Video
+    'webm', // WebM Video
+    'flv', // Flash Video
+    'wmv', // Windows Media Video
+    '3gp', // 3GPP Video
+    'mpeg', // MPEG Video
+    'ogv', // Ogg Video
+    'vob', // Video Object (DVD Video)
+  ]
+
+  // Audio file extensions
+  const audioExtensions = [
+    'mp3', // MP3 Audio
+    'wav', // WAV Audio
+    'ogg', // Ogg Audio
+    'flac', // FLAC Audio
+    'aac', // AAC Audio
+    'wma', // Windows Media Audio
+    'm4a', // M4A Audio
+    'aiff', // AIFF Audio
+    'alac', // Apple Lossless Audio
+    'opus', // Opus Audio
+  ]
+
+  // Check if file extension belongs to document category
   if (documentExtensions.includes(extension)) {
     return { type: 'document', extension }
   }
-  if (imageExtensions.includes(extension)) return { type: 'image', extension }
-  if (videoExtensions.includes(extension)) return { type: 'video', extension }
-  if (audioExtensions.includes(extension)) return { type: 'audio', extension }
 
+  // Check if file extension belongs to image category
+  if (imageExtensions.includes(extension)) {
+    return { type: 'image', extension }
+  }
+
+  // Check if file extension belongs to video category
+  if (videoExtensions.includes(extension)) {
+    return { type: 'video', extension }
+  }
+
+  // Check if file extension belongs to audio category
+  if (audioExtensions.includes(extension)) {
+    return { type: 'audio', extension }
+  }
+
+  // Default return for any other file types
   return { type: 'other', extension }
 }
 
