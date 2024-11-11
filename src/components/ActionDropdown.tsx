@@ -1,14 +1,11 @@
 'use client'
 
-import { Models } from 'node-appwrite'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   DropdownMenu,
@@ -18,14 +15,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useState } from 'react'
-import { usePathname } from 'next/navigation'
-import Image from 'next/image'
 import { actionsDropdownItems } from '@/constants'
-import Link from 'next/link'
+import {
+  deleteFile,
+  renameFile,
+  updateFileUsers,
+} from '@/lib/actions/file.action'
 import { constructDownloadUrl } from '@/lib/utils'
-import { Input } from './ui/input'
+import Image from 'next/image'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { Models } from 'node-appwrite'
+import { useState } from 'react'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { FileDetails, ShareInput } from './ActionModalContent'
 
 interface ActionType {
   label: string
@@ -49,7 +53,43 @@ export const ActionDropdown = ({ file }: { file: Models.Document }) => {
     setName(file.name)
   }
 
-  const handleAction = async () => {}
+  const handleAction = async () => {
+    if (!action) return
+    setIsLoading(true)
+    let success = false
+
+    const actions = {
+      rename: () =>
+        renameFile({
+          fileId: file.$id,
+          name,
+          extension: file.extension,
+          path,
+        }),
+      share: () => updateFileUsers({ fileId: file.$id, emails, path }),
+      delete: () =>
+        deleteFile({ fileId: file.$id, bucketFileId: file.bucketFileId, path }),
+    }
+
+    success = await actions[action.value as keyof typeof actions]()
+
+    if (success) closeAllModals()
+
+    setIsLoading(false)
+  }
+
+  const handleRemoveUser = async (email: string) => {
+    const updatedEmails = emails.filter((e) => e !== email)
+
+    const success = await updateFileUsers({
+      fileId: file.$id,
+      emails: updatedEmails,
+      path,
+    })
+
+    if (success) setEmails(updatedEmails)
+    closeAllModals()
+  }
 
   const renderDialogContent = () => {
     if (!action) return null
@@ -70,16 +110,22 @@ export const ActionDropdown = ({ file }: { file: Models.Document }) => {
             />
           )}
 
+          {value === 'details' && <FileDetails file={file} />}
+
+          {value === 'share' && (
+            <ShareInput
+              file={file}
+              onInputChange={setEmails}
+              onRemove={handleRemoveUser}
+            />
+          )}
+
           {value === 'delete' && (
             <p className="delete-confirmation">
               Are you sure you want to delete{' '}
               <span className="delete-file-name">{file.name}</span>?
             </p>
           )}
-          <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </DialogDescription>
         </DialogHeader>
 
         {['rename', 'delete', 'share'].includes(value) && (
@@ -87,6 +133,7 @@ export const ActionDropdown = ({ file }: { file: Models.Document }) => {
             <Button onClick={closeAllModals} className="modal-cancel-button">
               Cancel
             </Button>
+
             <Button onClick={handleAction} className="modal-submit-button">
               <p className="capitalize">{value}</p>
               {isLoading && (
